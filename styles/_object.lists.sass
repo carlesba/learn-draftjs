@@ -1,0 +1,34 @@
+//
+// Using flex
+//
+
+.o-hlist
+  height: 100%
+  +display(inline-flex)
+  +align-items(center)
+
+.o-hlist--fill
+  width: 100%
+
+.o-hlist--between
+  +justify-content(space-between)
+
+.o-hlist--start
+  +align-items(flex-start)
+
+.o-hlist__item
+  margin-right: 10px
+
+.o-hlist__item--large-padding
+  margin-right: 10px * 2
+
+.o-hlist__item,
+.o-hlist__item--large-padding
+  &.is-last
+    margin-right: 0
+
+.o-hlist--overlapped > .o-hlist__item
+  margin-right: -10px
+
+.o-hlist--reverse
+  +flex-direction(row-reverse)

@@ -1,0 +1,62 @@
+/*
+  <div class='o-hgrid'>
+    <div class='o-hgrid__fixed'></div>
+    <div class='o-hgrid__fixed o-hgrid__fixed--big'></div>
+    <div class='o-hgrid__fluid'></div>
+  </div>
+ */
+
+.o-hgrid
+  +display(flex)
+  height: 100%
+
+.o-hgrid--right
+  +justify-content(flex-end)
+
+.o-hgrid__fixed
+  height: 100%
+
+.o-hgrid__fixed--big
+  width: 230px
+
+.o-hgrid__fluid
+  height: 100%
+  +flex(1 1)
+
+/*
+  <div class='o-vgrid'>
+    <div class='o-vgrid__fixed'></div>
+    <div class='o-vgrid__fluid'>
+      This content can't have parent height
+    </div>
+    <div class='o-vgrid__fluid-wrap'>
+      <div class='o-vgrid__fluid-content'>
+        This content will have full height as parent
+      </div>
+    </div>
+  </div>
+ */
+.o-vgrid
+  +display(flex)
+  +flex-direction(column)
+  height: 100%
+
+.o-vgrid__fixed
+  height: 80px
+  +flex(0 0 80px)
+
+.o-vgrid__fluid
+  +flex(1 1)
+
+// .o-vgrid__fluid don't provide height reference
+// so it needs this modifier and a content wrapper in case we need height propagation
+.o-vgrid__fluid-wrap
+  position: relative
+  +flex(1 1)
+
+.o-vgrid__fluid-content
+  position: absolute
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0

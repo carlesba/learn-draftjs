@@ -1,0 +1,130 @@
+import React, {Component} from 'react'
+import {
+  Editor,
+  EditorState,
+  CompositeDecorator,
+  Entity,
+  RichUtils
+} from 'draft-js'
+
+//
+// Step 3: ENTITIES: Links
+//
+
+export default class MyEditor extends Component {
+  constructor (props) {
+    super(props)
+    this.onChange = this.onChange.bind(this)
+    this.addLink = this.addLink.bind(this)
+    this.state = {
+      editorState: EditorState.createEmpty(
+        this.createDecorators()
+      ),
+      url: ''
+    }
+  }
+  render () {
+    return (
+      <div className='o-fill c-my-editor'>
+        <div className='c-editor-controls'>
+          <input type='text' value={this.state.url} onChange={(e) =>
+            this.setState({url: e.target.value})
+          } />
+          <button onClick={this.addLink}>Add Link</button>
+        </div>
+        <Editor
+          editorState={this.state.editorState}
+          onChange={this.onChange}
+        />
+      </div>
+    )
+  }
+  onChange (editorState) {
+    this.setState({ editorState })
+  }
+  createDecorators () {
+    return new CompositeDecorator([
+      {
+        strategy: mentionStrategy,
+        component: Mention,
+        props: {
+          foo: () => {
+            console.log('callback executed!!!')
+          }
+        }
+      },
+      {
+        strategy: findLinkEntity,
+        component: LinkEntity
+      }
+    ])
+  }
+  addLink () {
+    const entityKey = Entity.create(
+      'LINK',
+      'MUTABLE', // try SEGMENTED, IMMUTABLE
+      {url: this.state.url}
+    )
+    const {editorState} = this.state
+    const newState = RichUtils.toggleLink(
+      editorState,
+      editorState.getSelection(),
+      entityKey
+    )
+    this.setState({
+      editorState: newState,
+      url: ''
+    })
+  }
+}
+
+const HASHTAG_REGEX = /@[\w\u0590-\u05ff]+/g
+
+const mentionStrategy = (block, callback) => {
+  return findWithRegex(HASHTAG_REGEX, block, callback)
+}
+
+function findWithRegex (regex, contentBlock, callback) {
+  const text = contentBlock.getText()
+  let matchArr, start
+  while ((matchArr = regex.exec(text)) !== null) {
+    start = matchArr.index
+    callback(start, start + matchArr[0].length)
+  }
+}
+
+const Mention = ({children, foo}) => {
+  return (
+    <div
+      className='c-mention'
+      onClick={() => foo()}
+    >
+      {children}
+    </div>
+  )
+}
+
+// **************************************
+//
+// New stuff
+//
+// *************************************
+
+function findLinkEntity (block, callback) {
+  block.findEntityRanges(
+    (character) => {
+      const entityKey = character.getEntity()
+      return entityKey !== null && Entity.get(entityKey).getType() === 'LINK'
+    },
+    callback
+  )
+}
+
+const LinkEntity = ({children, entityKey}) => {
+  const {url} = Entity.get(entityKey).getData()
+  return (
+    <div className='c-gif'>
+      <a href={url}>{children}</a>
+    </div>
+  )
+}
