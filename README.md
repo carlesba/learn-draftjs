@@ -9,7 +9,7 @@ npm start
 
 ## How to follow
 
-After `npm start` go to http://localhost:8080 to see output.
+After `npm start` go to `http://localhost:8080` to see output.
 
 Inside of `/src` you can find all the code.
 
